@@ -7,6 +7,7 @@ package com.atteg.GWInventoryTool.ui;
 
 import com.atteg.GWInventoryTool.model.Item;
 import com.atteg.GWInventoryTool.model.ItemStorage;
+import com.atteg.GWInventoryTool.service.CharacterService;
 import com.atteg.GWInventoryTool.service.ItemDetailsService;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.VaadinRequest;
@@ -32,10 +33,13 @@ public class MainUI extends UI {
 
     private final ItemDetailsService itemDetailsService;
 
+    private final CharacterService characterService;
+    
     @Autowired
-    public MainUI(StorageService storageService, ItemDetailsService itemDetailsService) {
+    public MainUI(StorageService storageService, ItemDetailsService itemDetailsService, CharacterService characterService) {
         this.storageService = storageService;
         this.itemDetailsService = itemDetailsService;
+        this.characterService = characterService;
     }
 
     @Override
@@ -61,8 +65,7 @@ public class MainUI extends UI {
             }
         }
         
-        //System.out.println(storageService.getCharacterInventory("Anyame"));
-        System.out.println(storageService.getMaterialStorage());
+        System.out.println(characterService.getCharacterNames());
 
         TreeGrid<Item> grid = new TreeGrid<>();
 
