@@ -18,23 +18,32 @@ import com.vaadin.ui.VerticalLayout;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.atteg.GWInventoryTool.service.StorageService;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
  *
  * @author laaks
  */
-@SpringUI(path = "/treegrid")
+@SpringUI(path = MainUI.PATH)
 @Theme("valo")
 public class MainUI extends UI {
+
+    public static final String PATH = "/ui";
 
     private final StorageService storageService;
 
     private final ItemDetailsService itemDetailsService;
 
     private final CharacterService characterService;
-    
+
     @Autowired
     public MainUI(StorageService storageService, ItemDetailsService itemDetailsService, CharacterService characterService) {
         this.storageService = storageService;
@@ -47,16 +56,30 @@ public class MainUI extends UI {
         VerticalLayout root = new VerticalLayout();
 
         // TESTAUKSIA
-        List<ItemStorage> allItems = new ArrayList<>(); 
+        List<ItemStorage> allItems = new ArrayList<>();
         allItems.addAll(storageService.getBank());
+        System.out.println("bank fetched");
         allItems.addAll(storageService.getSharedInventory());
-        
-        List<Integer> itemIds = allItems.stream().map(Item::getId).collect(Collectors.toList());
-        List<Item> items = itemDetailsService.getItems(itemIds);
-        
-        ItemStorage x = new ItemStorage(70250, "Bibibi", 5);
-        allItems.add(x);
+        System.out.println("shared fetched");
+        allItems.addAll(storageService.getMaterialStorage());
+        System.out.println("mats fetched");
 
+        List<String> characters = characterService.getCharacterNames();
+        System.out.println("char names fetched");
+        for (String s : characters) {
+            allItems.addAll(storageService.getCharacterInventory(s));
+            System.out.println(s + "'s inventory fetched");
+        }
+
+        //List<Integer> itemIds = allItems.stream().map(Item::getId).collect(Collectors.toList());
+        // Make list of ids not including duplicate ids
+        List<Integer> itemIds = Lists.newArrayList(Sets.newHashSet(allItems.stream().map(Item::getId).collect(Collectors.toList())));
+
+        System.out.println("fetching item details");
+        List<Item> items = itemDetailsService.getItems(itemIds);
+        System.out.println("item details fetched");
+
+        System.out.println("connecting items and storages");
         for (Item i : items) {
             for (Item b : allItems) {
                 if (i.getId() == b.getId()) {
@@ -64,8 +87,7 @@ public class MainUI extends UI {
                 }
             }
         }
-        
-        System.out.println(characterService.getCharacterNames());
+        System.out.println("items and storages connected");
 
         TreeGrid<Item> grid = new TreeGrid<>();
 
@@ -73,7 +95,6 @@ public class MainUI extends UI {
         grid.addColumn(Item::getCount).setCaption("Quantity");
 
         grid.setItems(items, Item::getStorages);
-
         root.addComponent(grid);
 
         setContent(root);

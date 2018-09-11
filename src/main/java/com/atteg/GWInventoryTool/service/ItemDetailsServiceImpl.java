@@ -7,6 +7,7 @@ package com.atteg.GWInventoryTool.service;
 
 import com.atteg.GWInventoryTool.model.Item;
 import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,9 +45,19 @@ public class ItemDetailsServiceImpl implements ItemDetailsService {
      */
     @Override
     public List<Item> getItems(List<Integer> ids) {
-        Item[] response = restTemplate.getForObject("https://api.guildwars2.com/v2/items?ids={ids}", Item[].class, formatIds(ids));
-        // Ensure response body was not empty. (Not [] but empty!)
-        return Optional.ofNullable(Arrays.asList(response)).orElseGet(ArrayList::new);
+
+        
+        List<Item> items = new ArrayList<>();
+        // Partition id list lists into batches of <= 200
+        List<List<Integer>> partIds = Lists.partition(ids, 200);
+
+        for (List<Integer> l : partIds) {
+            Item[] response = restTemplate.getForObject("https://api.guildwars2.com/v2/items?ids={ids}", Item[].class, formatIds(l));
+            // Ensure response body was not empty. (Not [] but empty!) If empty replace with an empty arraylist. TODO better solution?
+            items.addAll(Optional.ofNullable(Arrays.asList(response)).orElseGet(ArrayList::new));
+        }
+
+        return items;
     }
 
     /**
