@@ -5,24 +5,27 @@
  */
 package com.atteg.GWInventoryTool.service;
 
+import com.atteg.GWInventoryTool.model.AccessToken;
 import com.atteg.GWInventoryTool.repository.AccessTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GetAccessTokenServiceImpl implements GetAccessTokenService {
+public class SetAccessTokenServiceImpl implements SetAccessTokenService {
 
     private final AccessTokenRepository repository;
     
     @Autowired
-    public GetAccessTokenServiceImpl(AccessTokenRepository repository) {
+    public SetAccessTokenServiceImpl(AccessTokenRepository repository) {
         this.repository = repository;
     }
     
     @Override
-    public String getToken(String userName) {
-        //return "3657F510-9D21-8C43-855E-FE582C4C49741BB22799-4929-4BE1-8AAF-B61BBFD991FA";
-        return repository.findByUsername(userName);
+    public void setToken(AccessToken tokenDAO) {
+        AccessToken token = new AccessToken();
+        token.setAccessToken(tokenDAO.getAccessToken());
+        token.setUser(tokenDAO.getUser());
+        repository.save(token);
     }
-
+    
 }

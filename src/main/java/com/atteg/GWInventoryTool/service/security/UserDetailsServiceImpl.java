@@ -5,7 +5,7 @@
  */
 package com.atteg.GWInventoryTool.service.security;
 
-import com.atteg.GWInventoryTool.model.User;
+import com.atteg.GWInventoryTool.model.MyUser;
 import com.atteg.GWInventoryTool.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,7 +29,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-        return new CustomUserDetails(user.getUsername(), user.getPassword(), true, true, true, true, user.getAuthorities());
+        MyUser user = userRepository.findByUsername(username);
+        return new UserPrincipal(user.getUsername(), user.getPassword(), true, true, true, true, user.getAuthorities(), user);
     }
 }

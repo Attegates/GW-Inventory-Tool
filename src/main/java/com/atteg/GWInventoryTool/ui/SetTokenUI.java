@@ -14,21 +14,20 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author laaks
  */
-@SpringUI(path = LoginUI.PATH)
-public class LoginUI extends UI {
+@SpringUI(path = SetTokenUI.PATH)
+public class SetTokenUI extends UI {
 
-    public static final String PATH = "/login";
+    public static final String PATH = "/set_token";
 
-    
-    private final LoginUIFactory loginUIFactory;
-    
+    private final SetTokenUIFactory setTokenUIFactory;
+
     @Autowired
-    public LoginUI(LoginUIFactory loginUIFactory) {
-        this.loginUIFactory = loginUIFactory;
+    public SetTokenUI(SetTokenUIFactory setTokenUIFactory) {
+        this.setTokenUIFactory = setTokenUIFactory;
     }
 
     @Override
     protected void init(VaadinRequest request) {
-        setContent(loginUIFactory.createComponent());
+        setContent(setTokenUIFactory.createComponent());
     }
 }

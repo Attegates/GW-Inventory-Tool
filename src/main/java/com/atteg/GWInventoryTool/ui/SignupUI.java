@@ -19,8 +19,12 @@ public class SignupUI extends UI {
 
     public final static String PATH = "/signup";
 
+    private final SignupUIFactory signupUIFactory;
+    
     @Autowired
-    private SignupUIFactory signupUIFactory;
+    public SignupUI(SignupUIFactory signupUIFactory) {
+        this.signupUIFactory = signupUIFactory;
+    }
 
     @Override
     protected void init(VaadinRequest request) {

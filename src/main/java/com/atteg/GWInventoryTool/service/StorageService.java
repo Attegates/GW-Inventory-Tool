@@ -13,8 +13,8 @@ import java.util.List;
  * @author laaks
  */
 public interface StorageService {
-    public List<ItemStorage> getBank();
-    public List<ItemStorage> getSharedInventory();
-    public List<ItemStorage> getCharacterInventory(String characterName);
-    public List<ItemStorage> getMaterialStorage();
+    public List<ItemStorage> getBank(String accessToken);
+    public List<ItemStorage> getSharedInventory(String accessToken);
+    public List<ItemStorage> getCharacterInventory(String accessToken, String characterName);
+    public List<ItemStorage> getMaterialStorage(String accessToken);
 }

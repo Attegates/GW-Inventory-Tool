@@ -5,7 +5,7 @@
  */
 package com.atteg.GWInventoryTool.service.security;
 
-import com.atteg.GWInventoryTool.model.User;
+import com.atteg.GWInventoryTool.model.MyUser;
 import com.atteg.GWInventoryTool.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,7 +35,7 @@ public class RegisterUserServiceImpl implements RegisterUserService {
             throw new UsernameExistsException("Username \"" + username + "\" already exists.");
         }
 
-        User user = new User();
+        MyUser user = new MyUser();
         user.setUsername(username);
         user.setPassword(bCryptPasswordEncoder.encode(password));
         userRepository.save(user);
@@ -44,7 +44,7 @@ public class RegisterUserServiceImpl implements RegisterUserService {
     @Override
     public boolean usernameExists(String username) {
 
-        User user = userRepository.findByUsername(username);
+        MyUser user = userRepository.findByUsername(username);
         return user != null;
 
     }

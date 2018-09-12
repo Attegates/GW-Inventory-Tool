@@ -24,9 +24,7 @@ import org.springframework.web.client.RestTemplate;
  */
 @Service
 public class StorageServiceImpl implements StorageService {
-
-    private final String accessToken = "3657F510-9D21-8C43-855E-FE582C4C49741BB22799-4929-4BE1-8AAF-B61BBFD991FA";
-
+    
     private final RestTemplate restTemplate;
 
     @Autowired
@@ -35,7 +33,7 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public List<ItemStorage> getBank() {
+    public List<ItemStorage> getBank(String accessToken) {
         /*
         ResponseEntity<List<ItemStorage>> response = this.restTemplate.exchange("https://api.guildwars2.com/v2/account/bank?access_token={accessToken}",
                 HttpMethod.GET, null, new ParameterizedTypeReference<List<ItemStorage>>() {
@@ -48,7 +46,9 @@ public class StorageServiceImpl implements StorageService {
         bank.forEach(storage -> storage.setName("Bank"));
          */
 
-        ItemStorage[] response = restTemplate.getForObject("https://api.guildwars2.com/v2/account/bank?access_token={accessToken}", ItemStorage[].class, accessToken);
+        final String url = "https://api.guildwars2.com/v2/account/bank?access_token={accessToken}";
+        
+        ItemStorage[] response = restTemplate.getForObject(url, ItemStorage[].class, accessToken);
 
         // Ensure response body was not empty. (Not [] but empty!)
         List<ItemStorage> bank = Optional.ofNullable(Arrays.asList(response)).orElseGet(ArrayList::new);
@@ -63,8 +63,10 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public List<ItemStorage> getSharedInventory() {
-        ItemStorage[] response = restTemplate.getForObject("https://api.guildwars2.com/v2/account/inventory?access_token={accessToken}", ItemStorage[].class, accessToken);
+    public List<ItemStorage> getSharedInventory(String accessToken) {
+        final String url = "https://api.guildwars2.com/v2/account/inventory?access_token={accessToken}";
+        
+        ItemStorage[] response = restTemplate.getForObject(url, ItemStorage[].class, accessToken);
 
         // Ensure response body was not empty. (Not [] but empty!)
         List<ItemStorage> inventory = Optional.ofNullable(Arrays.asList(response)).orElseGet(ArrayList::new);
@@ -78,8 +80,8 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public List<ItemStorage> getCharacterInventory(String characterName) {
-        String url = "https://api.guildwars2.com/v2/characters/{characterName}/inventory?access_token={accessToken}";
+    public List<ItemStorage> getCharacterInventory(String accessToken, String characterName) {
+        final String url = "https://api.guildwars2.com/v2/characters/{characterName}/inventory?access_token={accessToken}";
 
         BagList response = restTemplate.getForObject(url, BagList.class, characterName, accessToken);
 
@@ -100,8 +102,8 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public List<ItemStorage> getMaterialStorage() {
-        String url = "https://api.guildwars2.com/v2/account/materials?access_token={accessToken}";
+    public List<ItemStorage> getMaterialStorage(String accessToken) {
+        final String url = "https://api.guildwars2.com/v2/account/materials?access_token={accessToken}";
 
         ItemStorage[] response = restTemplate.getForObject(url, ItemStorage[].class, accessToken);
 

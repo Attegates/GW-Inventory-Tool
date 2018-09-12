@@ -5,6 +5,7 @@
  */
 package com.atteg.GWInventoryTool.service.security;
 
+import com.atteg.GWInventoryTool.model.MyUser;
 import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -13,11 +14,18 @@ import org.springframework.security.core.userdetails.User;
  *
  * @author laaks
  */
-public class CustomUserDetails extends User {
-
-    public CustomUserDetails(String username, String password, boolean enabled, boolean accountNonExpired,
+public class UserPrincipal extends User {
+    
+    private final MyUser user;
+    
+    public UserPrincipal(String username, String password, boolean enabled, boolean accountNonExpired,
             boolean credentialsNonExpired, boolean accountNonLocked,
-            Collection<? extends GrantedAuthority> authorities) {
+            Collection<? extends GrantedAuthority> authorities, MyUser user) {
         super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
+        this.user = user;
+    }
+    
+    public MyUser getUser() {
+        return this.user;
     }
 }

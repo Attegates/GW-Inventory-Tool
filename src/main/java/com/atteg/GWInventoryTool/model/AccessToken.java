@@ -32,7 +32,7 @@ public class AccessToken {
 
     @OneToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private MyUser user;
 
     public AccessToken() {
     }
@@ -53,11 +53,11 @@ public class AccessToken {
         this.accessToken = accessToken;
     }
 
-    public User getUser() {
+    public MyUser getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(MyUser user) {
         this.user = user;
     }
 

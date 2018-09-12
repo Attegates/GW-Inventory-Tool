@@ -5,12 +5,12 @@
  */
 package com.atteg.GWInventoryTool.service;
 
-import java.util.List;
+import com.atteg.GWInventoryTool.model.AccessToken;
 
 /**
  *
  * @author laaks
  */
-public interface CharacterService {
-    public List<String> getCharacterNames(String accessToken);
+public interface SetAccessTokenService {
+    public void setToken(AccessToken token);
 }

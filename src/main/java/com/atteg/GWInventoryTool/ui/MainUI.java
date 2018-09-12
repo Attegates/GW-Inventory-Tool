@@ -8,6 +8,7 @@ package com.atteg.GWInventoryTool.ui;
 import com.atteg.GWInventoryTool.model.Item;
 import com.atteg.GWInventoryTool.model.ItemStorage;
 import com.atteg.GWInventoryTool.service.CharacterService;
+import com.atteg.GWInventoryTool.service.GetAccessTokenService;
 import com.atteg.GWInventoryTool.service.ItemDetailsService;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.VaadinRequest;
@@ -18,6 +19,7 @@ import com.vaadin.ui.VerticalLayout;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.atteg.GWInventoryTool.service.StorageService;
+import com.atteg.GWInventoryTool.service.security.UserPrincipal;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.io.IOException;
@@ -27,6 +29,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  *
@@ -43,12 +46,15 @@ public class MainUI extends UI {
     private final ItemDetailsService itemDetailsService;
 
     private final CharacterService characterService;
+    
+    private final GetAccessTokenService tokenService;
 
     @Autowired
-    public MainUI(StorageService storageService, ItemDetailsService itemDetailsService, CharacterService characterService) {
+    public MainUI(StorageService storageService, ItemDetailsService itemDetailsService, CharacterService characterService, GetAccessTokenService tokenService) {
         this.storageService = storageService;
         this.itemDetailsService = itemDetailsService;
         this.characterService = characterService;
+        this.tokenService = tokenService;
     }
 
     @Override
@@ -56,18 +62,19 @@ public class MainUI extends UI {
         VerticalLayout root = new VerticalLayout();
 
         // TESTAUKSIA
+        String accessToken = tokenService.getToken(((UserPrincipal)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
         List<ItemStorage> allItems = new ArrayList<>();
-        allItems.addAll(storageService.getBank());
+        allItems.addAll(storageService.getBank(accessToken));
         System.out.println("bank fetched");
-        allItems.addAll(storageService.getSharedInventory());
+        allItems.addAll(storageService.getSharedInventory(accessToken));
         System.out.println("shared fetched");
-        allItems.addAll(storageService.getMaterialStorage());
+        allItems.addAll(storageService.getMaterialStorage(accessToken));
         System.out.println("mats fetched");
 
-        List<String> characters = characterService.getCharacterNames();
+        List<String> characters = characterService.getCharacterNames(accessToken);
         System.out.println("char names fetched");
         for (String s : characters) {
-            allItems.addAll(storageService.getCharacterInventory(s));
+            allItems.addAll(storageService.getCharacterInventory(accessToken, s));
             System.out.println(s + "'s inventory fetched");
         }
 

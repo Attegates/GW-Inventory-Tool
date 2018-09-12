@@ -17,8 +17,6 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class CharacterServiceImpl implements CharacterService {
 
-    private final String url = "https://api.guildwars2.com/v2/characters?access_token={accessToken}";
-    private final String accessToken = "3657F510-9D21-8C43-855E-FE582C4C49741BB22799-4929-4BE1-8AAF-B61BBFD991FA";
 
     private final RestTemplate restTemplate;
 
@@ -28,7 +26,9 @@ public class CharacterServiceImpl implements CharacterService {
     }
 
     @Override
-    public List<String> getCharacterNames() {
+    public List<String> getCharacterNames(String accessToken) {
+        
+        final String url = "https://api.guildwars2.com/v2/characters?access_token={accessToken}";
 
         String[] response = restTemplate.getForObject(url, String[].class, accessToken);
 

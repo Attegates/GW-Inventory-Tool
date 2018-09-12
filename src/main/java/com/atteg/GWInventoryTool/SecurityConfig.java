@@ -6,6 +6,7 @@
 package com.atteg.GWInventoryTool;
 
 import com.atteg.GWInventoryTool.ui.LoginUI;
+import com.atteg.GWInventoryTool.ui.SetTokenUI;
 import com.atteg.GWInventoryTool.ui.SignupUI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -46,7 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().exceptionHandling().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
                 .and().authorizeRequests().antMatchers("/VAADIN/**", "/PUSH/**", "UIDL/**", "vaadinServlet/**", LoginUI.PATH, SignupUI.PATH).permitAll()
-                .antMatchers("/ui", "/ui/**").fullyAuthenticated();
+                .antMatchers("/ui", "/ui/**", SetTokenUI.PATH).fullyAuthenticated();
                 //.antMatchers("/").permitAll();  // CONFIGURE LATER
     }
 
