@@ -22,12 +22,11 @@ import com.atteg.GWInventoryTool.service.StorageService;
 import com.atteg.GWInventoryTool.service.security.UserPrincipal;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import java.io.IOException;
+import com.vaadin.data.HasValue;
+import com.vaadin.data.TreeData;
+import com.vaadin.data.provider.TreeDataProvider;
+import com.vaadin.ui.TextField;
 import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -65,28 +64,24 @@ public class MainUI extends UI {
         String accessToken = tokenService.getToken(((UserPrincipal)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
         List<ItemStorage> allItems = new ArrayList<>();
         allItems.addAll(storageService.getBank(accessToken));
-        System.out.println("bank fetched");
         allItems.addAll(storageService.getSharedInventory(accessToken));
-        System.out.println("shared fetched");
         allItems.addAll(storageService.getMaterialStorage(accessToken));
-        System.out.println("mats fetched");
 
         List<String> characters = characterService.getCharacterNames(accessToken);
-        System.out.println("char names fetched");
+
         for (String s : characters) {
             allItems.addAll(storageService.getCharacterInventory(accessToken, s));
-            System.out.println(s + "'s inventory fetched");
         }
 
         //List<Integer> itemIds = allItems.stream().map(Item::getId).collect(Collectors.toList());
         // Make list of ids not including duplicate ids
         List<Integer> itemIds = Lists.newArrayList(Sets.newHashSet(allItems.stream().map(Item::getId).collect(Collectors.toList())));
 
-        System.out.println("fetching item details");
-        List<Item> items = itemDetailsService.getItems(itemIds);
-        System.out.println("item details fetched");
 
-        System.out.println("connecting items and storages");
+        List<Item> items = itemDetailsService.getItems(itemIds);
+
+
+
         for (Item i : items) {
             for (Item b : allItems) {
                 if (i.getId() == b.getId()) {
@@ -94,17 +89,32 @@ public class MainUI extends UI {
                 }
             }
         }
-        System.out.println("items and storages connected");
+
 
         TreeGrid<Item> grid = new TreeGrid<>();
 
         grid.addColumn(Item::getName).setCaption("Name");
         grid.addColumn(Item::getCount).setCaption("Quantity");
 
-        grid.setItems(items, Item::getStorages);
-        root.addComponent(grid);
+        
+        TreeData treeData = new TreeData(); 
+        treeData.addItems(null, items);
+        items.forEach(item -> treeData.addItems(item, item.getStorages()));
+        TreeDataProvider<Item> dataProvider = new TreeDataProvider<>(treeData);
+        grid.setDataProvider(dataProvider);
 
+        // Filter hides child elements TODO fix or find better solution.
+        TextField filterText = new TextField();
+        filterText.addValueChangeListener(s -> {
+            dataProvider.setFilter(item -> item.getName().toLowerCase().contains(s.getValue().toLowerCase()));
+        });
+        
+        
+        root.addComponent(filterText);
+        root.addComponent(grid);
         setContent(root);
 
     }
+    
+
 }
